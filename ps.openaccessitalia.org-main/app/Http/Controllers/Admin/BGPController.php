@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Aggregator\Aggregator;
+use DB;
 
 class BGPController extends Controller
 {
@@ -17,7 +18,8 @@ class BGPController extends Controller
     public function make_ipv4_list_file(){
         \App\Http\Controllers\Admin\ActionLogController::log(0,"bgp_system","trying to make ipv4 bgp file in '".base_path('storage/download/').'ipv4.txt'."'");
         $content = '';
-        $ipv4s_piracy = \App\Piracy\IPv4s::select('ipv4')->distinct()->pluck('ipv4')->toArray();
+        $months = env('PIRACY_SHIELD_ITEMS_VALIDITY_MONTHS');
+        $ipv4s_piracy = collect(DB::connection('mysql')->select("select feedbacks.item from (select distinct item from ps_ticket_items_log where item_type = 'ipv4' and `timestamp` > DATE_SUB(now(), INTERVAL ? MONTH)) as feedbacks INNER JOIN (select ipv4 as item from ps_ipv4s where `timestamp` > DATE_SUB(now(), INTERVAL ? MONTH)) as lastitems on feedbacks.item = lastitems.item order by item",[$months,$months]))->pluck('item');
         $ipv4s_manual = \App\Manual\IPv4s::select('ipv4')->distinct()->pluck('ipv4')->toArray();
         $done = [];
         foreach ($ipv4s_piracy as $ipv4) {
@@ -48,7 +50,8 @@ class BGPController extends Controller
     public function make_ipv6_list_file(){
         \App\Http\Controllers\Admin\ActionLogController::log(0,"bgp_system","trying to make ipv6 bgp file in '".base_path('storage/download/').'ipv6.txt'."'");
         $content = '';
-        $ipv6s_piracy = \App\Piracy\IPv6s::select('ipv6')->distinct()->pluck('ipv6')->toArray();
+        $months = env('PIRACY_SHIELD_ITEMS_VALIDITY_MONTHS');
+        $ipv6s_piracy = collect(DB::connection('mysql')->select("select feedbacks.item from (select distinct item from ps_ticket_items_log where item_type = 'ipv6' and `timestamp` > DATE_SUB(now(), INTERVAL ? MONTH)) as feedbacks INNER JOIN (select ipv6 as item from ps_ipv6s where `timestamp` > DATE_SUB(now(), INTERVAL ? MONTH)) as lastitems on feedbacks.item = lastitems.item order by item",[$months,$months]))->pluck('item');
         $ipv6s_manual = \App\Manual\IPv6s::select('ipv6')->distinct()->pluck('ipv6')->toArray();
         $done = [];
         foreach ($ipv6s_piracy as $ipv6) {
