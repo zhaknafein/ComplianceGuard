@@ -41,7 +41,7 @@ class ADMController extends Controller
                     if(strpos($row, "Elenco dei siti soggetti ad inibizione - txt") !== false){
                         $txt = self::get_href(trim($row));
                     }
-                    if(strpos($row, "File di controllo - txt") !== false){
+                    if(strpos($row, "File di controllo (SHA 256) - txt") !== false){
                         $sha256 = self::get_href(trim($row));
                     }
                 }
@@ -173,7 +173,7 @@ class ADMController extends Controller
                     if(strpos($row, "Elenco dei siti soggetti ad inibizione - txt") !== false){
                         $txt = self::get_href(trim($row));
                     }
-                    if(strpos($row, "File di controllo - txt") !== false){
+                    if(strpos($row, "File di controllo (SHA 256) - txt") !== false){
                         $sha256 = self::get_href(trim($row));
                     }
                 }
